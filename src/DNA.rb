@@ -61,7 +61,7 @@ class Squirrel_Manager
 	def breed_squirrel
 		squirrels = @alive.shuffle
 		squirrels.each_with_index do |squirrel, index|
-			num = rand(10) 
+			num = rand(15) 
 			breed = (num == 0) # 1 in 4 chance to breed
 			if breed
 				new_gene = squirrel.gene.crossover(squirrels[index-1].gene)	
@@ -221,4 +221,4 @@ end
 
 manager = Squirrel_Manager.new
 manager.seed(25)
-manager.start(100)
+manager.start(200)
