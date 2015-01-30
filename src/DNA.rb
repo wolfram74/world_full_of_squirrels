@@ -1,36 +1,3 @@
-
-# DNA + Base Pairs (although we aren't really using pairs.. )
-class DNA_Base
-	def type
-		return self.class.to_s
-	end
-end
-
-class Base_A < DNA_Base
-	def self.to_str
-		"A"
-	end
-end
-
-class Base_T < DNA_Base
-	def self.to_str
-		"T"
-	end
-end
-
-class Base_G < DNA_Base
- 	def self.to_str
-		"G"
-	end
-end
-
-class Base_C < DNA_Base
-	def self.to_str
-		"C"
-	end
-end
-
-
 class Squirrel_Manager 
 	def initialize
 		@alive = []
@@ -39,32 +6,36 @@ class Squirrel_Manager
 	end
 
 	def seed(count)
-		bases = [Base_A, Base_G, Base_C, Base_T]
+		bases = ("A".."Z").to_a 
 		for i in 0..count
 			#make a gene
-			gene = []
+			gene = "" 
 			for i in 0..9
-				gene << bases.sample
+				gene += bases.sample
 			end
-			@alive << Squirrel.new(Gene.new(gene))
+			@alive << Squirrel.new(gene)
 		end
+		puts "ALIVE:"
+		puts @alive
 	end
 
 	def print_dead
+		puts "DEAD SQUIRRELS CNT: #{@dead.length}"
 		@dead.each {|squirrel| puts squirrel.to_s}
 	end
 
 	def print_alive
+		puts "ALIVE SQUIRRELS CNT: #{@alive.length}"
 		@alive.each {|squirrel| puts squirrel.to_s}
 	end
 
 	def breed_squirrel
 		squirrels = @alive.shuffle
 		squirrels.each_with_index do |squirrel, index|
-			num = rand(15) 
+			num = rand(10) 
 			breed = (num == 0) # 1 in 4 chance to breed
 			if breed
-				new_gene = squirrel.gene.crossover(squirrels[index-1].gene)	
+				new_gene = squirrel.crossover(squirrels[index-1].gene)	
 				@alive << Squirrel.new(new_gene)
 				squirrels.delete_at(index)
 				squirrels.delete_at(index-1)
@@ -98,7 +69,7 @@ class Squirrel_Manager
 		#@all = @alive + @dead
 		@all = @dead
 		#puts @all
-		puts "SQUIRREL CNT: #{@all.count}"
+		puts "SQUIRREL CNT: #{@alive.count + @dead.count}"
 		puts "TOP 10 BEST SQUIRRELS:"
 		@all.sort_by! {|squirrel| squirrel.get_age } 
 		10.times { puts @all.pop.to_s }
@@ -108,6 +79,21 @@ class Squirrel_Manager
 		@all.reverse!
 		10.times {puts @all.pop.to_s }
 
+		#print_alive
+		#print_dead
+	end
+
+
+	# default count is 200
+	def give_nested_list(count = 200)
+		@all = @dead + @alive
+		@all.shuffle
+
+		@list = []
+		for i in 0..count
+			@list << @all[i].gene
+		end
+		@list
 	end
 end
 
@@ -137,21 +123,43 @@ class Squirrel
 	end
 
 	def check_death
-		gene_str = @gene.to_s
 		gene_prob = 0
-		if gene_str.include? "AAA" 
-			gene_prob = 45 # bad
-		elsif gene_str.include? "GGG"
-			gene_prob = 62 #rly bad
-		elsif gene_str.include? "TTT"
-			gene_prob = -25 #good
-		elsif gene_str.include? "CCC"
-			gene_prob = 52 #bad
+		gene = @gene
+
+		#Bad genes
+		if @gene.index("AA") != nil
+			gene_prob += -15 # bad
+		end
+		if @gene.index("BB") != nil
+			gene_prob += -20
+		end
+		if @gene.index("CC") != nil
+			gene_prob += -10
+		end
+		if @gene.index("DD") != nil
+			gene_prob += -5
+		end
+
+		# good genes
+		if @gene.index("EE")
+			gene_prob += 10
+		end
+
+		if @gene.index("FF")
+			gene_prob += 15
+		end
+
+		if @gene.index("GG")
+			gene_prob += 25 
+		end
+
+		if @gene.index("HH")
+			gene_prob += 50
 		end
 
 #		puts "Checking death.."
 
-		survival_probabilty = 25.0 / (25.0 + @age + gene_prob) 
+		survival_probabilty = 25.0 / (25.0 + @age - gene_prob)
 		survival_probabilty = 1 if survival_probabilty > 1
 		survival_probabilty = 1 if survival_probabilty < 0
 		if rand() > survival_probabilty
@@ -165,6 +173,19 @@ class Squirrel
 		Alive: #{@alive}
 		Gene: #{@gene.to_s}\n"
 	end
+
+
+	def crossover (bases2)
+		new_base = ""
+		for i in (0..9)
+			if rand(0..1)  == 0
+				new_base << gene[i]
+			else
+				new_base << bases2[i]
+			end
+		end
+		new_base	
+	end		
 end
 
 class Gene
@@ -187,7 +208,7 @@ class Gene
 	# missense mutation - change a base, randomly
 	def mutate
 		index = rand(0..9) # pick the location of a base
-        base = [Base_A, Base_T, Base_G, Base_C] 
+        base = ["A".."Z"]
 		base = base - [@bases[index]] # must choose a new base
 		base_index = rand(0..2)
 		@bases[index] = base[base_index] #mutate
@@ -221,4 +242,6 @@ end
 
 manager = Squirrel_Manager.new
 manager.seed(25)
-manager.start(200)
+manager.start(120)
+
+puts manager.give_nested_list(200)
