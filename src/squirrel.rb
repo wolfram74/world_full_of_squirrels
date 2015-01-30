@@ -19,8 +19,58 @@ class Squirrel
 		"Alive: " + (deathday == nil ? "Yes" : "No") + "\n" +
 		"Chromosomes: " + chromosomes.to_s + "\n\n"
 	end
-end
 
+	# TODO: get_age
+	def get_age 
+		# query the databse for the world's current year 
+		query = 0 # should actually come from the world...
+		return query - birthday
+	end
+
+
+
+	# From world, I get an a hash containing a key, value pair as such:
+	# key: array (of two letter strings) 
+	# value: genetic constant boost 
+	# input: hash of good/bad genes
+	def death_chance (world_genes)
+		# Formula:
+		#             100 
+		# ___________________________
+		# (100 + age - gene constant)
+		
+		# If gene constant = 0, squirrel has a50% chance of dying
+		# around age 11-12
+
+		# Calculate the gene constant
+		gene_constant = 0
+		world_genes.each do |key, value|
+			# key is the array
+			has_sequence = true 
+			key.each do |chromesome_pair|
+				# check if the squirrel has pair
+				if @chromesomes.index(chromosome_pair) == nil
+					has_sequence = false
+				end
+			end
+
+			gene_constant += value if has_sequence
+		end
+		
+		# Create max and min bound for gene constnat
+		if gene_constant < 0
+			gene_constant = 0
+		elsif gene_constant > 100 
+			gene_constant = 100 # can change if we want ofc
+		end
+
+		# get the age
+
+		death_probabilty = 100 / (100 + get_age + gene_constant)
+		puts "Probability of death: " + death_probability 
+		return death_probabilty
+	end
+end
 
 def create_new_chromosomes (chr1, chr2)
 	final_chromes = ""
@@ -43,6 +93,8 @@ def create_new_chromosomes (chr1, chr2)
 
 	final_chromes
 end
+
+
 
 
 #TESTS
