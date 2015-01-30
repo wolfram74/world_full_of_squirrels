@@ -1,6 +1,6 @@
 require_relative "../../config/application"
 
-class CreateSquirrels < ActiveRecord::Migrations
+class CreateSquirrels < ActiveRecord::Migration
   def change
     create_table :squirrels do |t|
       t.string :genome
@@ -9,5 +9,6 @@ class CreateSquirrels < ActiveRecord::Migrations
       t.integer :world_id
 
       t.timestamps
+    end
   end
 end
