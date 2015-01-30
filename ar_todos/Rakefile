@@ -25,7 +25,7 @@ task "db:migrate" do
 end
 
 desc "populate the test database with sample data"
-task "db:seed" do
+task "db:seeds" do
   require APP_ROOT.join('db', 'seeds.rb')
 end
 

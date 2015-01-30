@@ -19,4 +19,6 @@ squirrels have an id, a genome, a birth time and a death time, world_id
 squirrel class
 
 
-worlds have an id, perhaps a description about the experiment, and a collection of selection pressures.
+worlds have an id, description about the experiment, and a collection of selection pressures. years incremented.
+
+
