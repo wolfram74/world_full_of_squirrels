@@ -24,6 +24,105 @@ class Squirrel_Manager
 		@dead.each {|squirrel| puts squirrel.to_s}
 	end
 
+
+	# FOR THE GRAPHS
+	# ================================
+
+	# LARGEST AGE VS GENE
+	def longest_age_genes
+		temp_all = []
+		temp_all = @dead + @alive
+		temp_all.sort_by! {|squirrel| squirrel.get_age } 
+		the_return = []
+		10.times { the_return << temp_all.pop.gene }
+		return the_return
+	end
+
+	def longest_age_ages
+		temp_all = []
+		temp_all = @dead + @alive
+		temp_all.sort_by! {|squirrel| squirrel.get_age } 
+		the_return = []
+		10.times { the_return << temp_all.pop.get_age }
+		return the_return
+	end
+
+	# GENE VS LARGEST COUNT
+	def gene_vs_largest_count (count)
+		temp_all = []
+		temp_all = @dead + @alive
+
+		hash = Hash.new
+		temp_all.each do |squirrel|
+			if hash.has_key?(squirrel.gene)
+				hash[squirrel.gene] += 1
+			else
+				hash[squirrel.gene] = 1
+			end
+		end
+
+		hash = hash.sort_by {|_key, value| value}
+		
+		arr = []
+		arr2 = []
+		for i in 0..count
+			temp_arr = hash.pop
+			arr << temp_arr[0] 
+			arr2 << temp_arr[1]
+		end
+
+		[arr, arr2] 
+	end
+
+	def eight_genes_vs_count
+		all = @dead + @alive
+		gene_list = []
+		all.each do |squirrel|
+			gene_list << squirrel.gene
+		end
+
+		a_cnt = 0
+		b_cnt = 0
+		c_cnt = 0
+		d_cnt = 0
+		e_cnt = 0
+		f_cnt = 0
+		g_cnt = 0
+		h_cnt = 0
+
+		gene_list.each do |str|
+			if str.index("AA") != nil
+				a_cnt += 1
+			end
+			if str.index("BB") != nil
+				b_cnt += 1
+			end
+			if str.index("CC") != nil
+				c_cnt += 1
+			end
+			if str.index("DD") != nil
+				d_cnt += 1
+			end
+			if str.index("EE") != nil
+				e_cnt += 1
+			end
+			if str.index("FF") != nil
+				f_cnt += 1
+			end
+			if str.index("GG") != nil
+				g_cnt += 1
+			end
+			if str.index("HH") != nil
+				h_cnt += 1
+			end
+		end
+		return [a_cnt, b_cnt, c_cnt, d_cnt, e_cnt, f_cnt, g_cnt, h_cnt]
+	end
+
+
+
+
+
 	def print_alive
 		puts "ALIVE SQUIRRELS CNT: #{@alive.length}"
 		@alive.each {|squirrel| puts squirrel.to_s}
@@ -85,6 +184,40 @@ class Squirrel_Manager
 
 
 	# default count is 200
+	def most_common_gene(count = 200)
+		@all = @alive + @dead
+		@all.shuffle
+	
+		
+		list = {} 
+		puts "AHHHHHHHHHHHH"
+		for i in 0..count
+			puts "I: #{i}"
+			#puts "ALL: #{@all}"
+			the_gene= @all[i].gene
+			if list[the_gene] == nil
+				list[the_gene] = 1
+			else
+				list[the_gene] += 1
+			end
+		end
+		puts "THE LIST: #{list}"
+		list = list.sort_by{|key, value| value}
+		puts "="*30
+
+		# limit it 
+		puts "AAAAAAAAAAAA #{list.class}"
+		the_return1 = []
+		the_return2 = []
+		keys = list.keys
+		vals = list.values
+		for i in 0..4
+			the_return1 << keys[i]
+			the_return2 << vals[i] 
+		end
+		return [the_return1, the_return2]	
+	end
+
 	def give_nested_list(count = 200)
 		@all = @dead + @alive
 		@all.shuffle
@@ -128,33 +261,33 @@ class Squirrel
 
 		#Bad genes
 		if @gene.index("AA") != nil
-			gene_prob += -15 # bad
+			gene_prob += -10 # bad
 		end
 		if @gene.index("BB") != nil
-			gene_prob += -20
+			gene_prob += -7
 		end
 		if @gene.index("CC") != nil
-			gene_prob += -10
+			gene_prob += -4
 		end
 		if @gene.index("DD") != nil
-			gene_prob += -5
+			gene_prob += -3
 		end
 
 		# good genes
 		if @gene.index("EE")
-			gene_prob += 10
+			gene_prob += 3
 		end
 
 		if @gene.index("FF")
-			gene_prob += 15
+			gene_prob += 5
 		end
 
 		if @gene.index("GG")
-			gene_prob += 25 
+			gene_prob += 7 
 		end
 
 		if @gene.index("HH")
-			gene_prob += 50
+			gene_prob += 9
 		end
 
 #		puts "Checking death.."
@@ -241,7 +374,19 @@ end
 
 
 manager = Squirrel_Manager.new
-manager.seed(25)
-manager.start(120)
+manager.seed(500)
+manager.start(100)
 
-puts manager.give_nested_list(200)
+arr = manager.longest_age_genes
+arr2 = manager.longest_age_ages
+#puts "arr"
+#puts arr
+#puts "AAAA"
+#puts arr2
+
+arr = manager.gene_vs_largest_count(10)
+p arr[0]
+p arr[1]
+
+# THIS RETURNS THE ARRAY
+p manager.eight_genes_vs_count
