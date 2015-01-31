@@ -1,3 +1,5 @@
+MUTATION =false 
+
 class Squirrel_Manager 
 	def initialize
 		@alive = []
@@ -15,8 +17,6 @@ class Squirrel_Manager
 			end
 			@alive << Squirrel.new(gene)
 		end
-		puts "ALIVE:"
-		puts @alive
 	end
 
 	def print_dead
@@ -139,12 +139,21 @@ class Squirrel_Manager
 				squirrels.delete_at(index)
 				squirrels.delete_at(index-1)
 			end
+
+
+			# chance for mutation
+			if MUTATION == true
+				# 10% chance to mutate
+				if rand() > 0.99
+					@alive[-1].mutate
+				end
+			end
 		end
 	end
 
 	def increment_year
 		@year += 1
-		puts "IT is now year #{@year}"
+#		puts "IT is now year #{@year}"
 		@alive.each do |squirrel|
 #			puts "Going thru squirrel"
 			squirrel.age
@@ -166,68 +175,22 @@ class Squirrel_Manager
 		end
 	
 		#@all = @alive + @dead
-		@all = @dead
+#		@all = @dead
 		#puts @all
-		puts "SQUIRREL CNT: #{@alive.count + @dead.count}"
-		puts "TOP 10 BEST SQUIRRELS:"
-		@all.sort_by! {|squirrel| squirrel.get_age } 
-		10.times { puts @all.pop.to_s }
+#		puts "SQUIRREL CNT: #{@alive.count + @dead.count}"
+#		puts "TOP 10 BEST SQUIRRELS:"
+#		@all.sort_by! {|squirrel| squirrel.get_age } 
+#		10.times { puts @all.pop.to_s }
 
-		puts "=" * 50
-		puts "TOP 10 WORST SQUIRRELS"
-		@all.reverse!
-		10.times {puts @all.pop.to_s }
+#		puts "=" * 50
+#j		puts "TOP 10 WORST SQUIRRELS"
+#		@all.reverse!
+#		10.times {puts @all.pop.to_s }
 
 		#print_alive
 		#print_dead
 	end
 
-
-	# default count is 200
-	def most_common_gene(count = 200)
-		@all = @alive + @dead
-		@all.shuffle
-	
-		
-		list = {} 
-		puts "AHHHHHHHHHHHH"
-		for i in 0..count
-			puts "I: #{i}"
-			#puts "ALL: #{@all}"
-			the_gene= @all[i].gene
-			if list[the_gene] == nil
-				list[the_gene] = 1
-			else
-				list[the_gene] += 1
-			end
-		end
-		puts "THE LIST: #{list}"
-		list = list.sort_by{|key, value| value}
-		puts "="*30
-
-		# limit it 
-		puts "AAAAAAAAAAAA #{list.class}"
-		the_return1 = []
-		the_return2 = []
-		keys = list.keys
-		vals = list.values
-		for i in 0..4
-			the_return1 << keys[i]
-			the_return2 << vals[i] 
-		end
-		return [the_return1, the_return2]	
-	end
-
-	def give_nested_list(count = 200)
-		@all = @dead + @alive
-		@all.shuffle
-
-		@list = []
-		for i in 0..count
-			@list << @all[i].gene
-		end
-		@list
-	end
 end
 
 
@@ -261,16 +224,16 @@ class Squirrel
 
 		#Bad genes
 		if @gene.index("AA") != nil
-			gene_prob += -10 # bad
+			gene_prob += -13 # bad
 		end
 		if @gene.index("BB") != nil
-			gene_prob += -7
+			gene_prob += -10
 		end
 		if @gene.index("CC") != nil
-			gene_prob += -4
+			gene_prob += -7
 		end
 		if @gene.index("DD") != nil
-			gene_prob += -3
+			gene_prob += -4
 		end
 
 		# good genes
@@ -279,15 +242,15 @@ class Squirrel
 		end
 
 		if @gene.index("FF")
-			gene_prob += 5
+			gene_prob += 4
 		end
 
 		if @gene.index("GG")
-			gene_prob += 7 
+			gene_prob += 6 
 		end
 
 		if @gene.index("HH")
-			gene_prob += 9
+			gene_prob += 8
 		end
 
 #		puts "Checking death.."
@@ -319,6 +282,13 @@ class Squirrel
 		end
 		new_base	
 	end		
+
+	def mutate
+		index = rand(0..9) # pick the location of a base
+        base = ('A'..'Z').to_a 
+		base_index = rand(0..25)
+		gene[index] = base[base_index] #mutate
+	end
 end
 
 class Gene
@@ -339,13 +309,6 @@ class Gene
 	end
 
 	# missense mutation - change a base, randomly
-	def mutate
-		index = rand(0..9) # pick the location of a base
-        base = ["A".."Z"]
-		base = base - [@bases[index]] # must choose a new base
-		base_index = rand(0..2)
-		@bases[index] = base[base_index] #mutate
-	end
 
 	# returns new gene of cross over
 	def crossover (bases2)
@@ -374,8 +337,8 @@ end
 
 
 manager = Squirrel_Manager.new
-manager.seed(500)
-manager.start(100)
+manager.seed(1000)
+manager.start(200)
 
 arr = manager.longest_age_genes
 arr2 = manager.longest_age_ages
@@ -384,9 +347,6 @@ arr2 = manager.longest_age_ages
 #puts "AAAA"
 #puts arr2
 
-arr = manager.gene_vs_largest_count(10)
-p arr[0]
-p arr[1]
 
 # THIS RETURNS THE ARRAY
 p manager.eight_genes_vs_count
