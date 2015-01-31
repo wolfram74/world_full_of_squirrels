@@ -46,6 +46,27 @@ class World < ActiveRecord::Base
     self.squirrels.where(death_time: nil)
   end
 
+  def feed_david
+    census = living_squirrels.map{|squirrel| squirrel.genome_list}
+    p census
+    gene_freq = {}
+    census.each do |body|
+      body.each do |chrome|
+        if gene_freq[chrome]
+          gene_freq[chrome]+=1
+        else
+          gene_freq[chrome] = 1
+        end
+      end
+    end
+
+    sorted_gene = gene_freq.sort_by{| k,v| v}
+    # p sorted_gene
+    return sorted_gene
+  end
+
+
+
   def make_babies(number=100)
     parents = self.squirrels.where(death_time: nil).sample(number*2)
     parents = parents.each_slice(2).to_a
