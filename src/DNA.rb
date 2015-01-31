@@ -349,4 +349,4 @@ arr2 = manager.longest_age_ages
 
 
 # THIS RETURNS THE ARRAY
-p manager.eight_genes_vs_count
+#p manager.eight_genes_vs_count
